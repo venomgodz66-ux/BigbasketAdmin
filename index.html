@@ -650,13 +650,13 @@
             const mainContent = document.getElementById('main-admin-content');
 
             if (pass === '1001') {
-                msgDiv.innerHTML = '<span class="msg-success"><i class="fas fa-check-circle"></i> AAIYE AAPKA HI TO INTEJAR THA</span>';
+                msgDiv.innerHTML = '<span class="msg-success"><i class="fas fa-check-circle"></i> Welcome To Bigbasket Panel</span>';
                 setTimeout(() => {
                     lockScreen.style.display = 'none';
                     mainContent.style.display = 'block';
                 }, 1000);
             } else {
-                msgDiv.innerHTML = '<span class="msg-error"><i class="fas fa-lock"></i> JAAKE BAAP SE PASSWORD PUCCHH !</span>';
+                msgDiv.innerHTML = '<span class="msg-error"><i class="fas fa-lock"></i> Connect @SpyGodz!</span>';
                 document.getElementById('admin-pass').value = '';
                 setTimeout(() => {
                     if(msgDiv.innerHTML.includes("JAAKE")) msgDiv.innerHTML = '';
