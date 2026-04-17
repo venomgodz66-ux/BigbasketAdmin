@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FreshMart Admin | BigBasket Style Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            color: #1a2c3e;
+            transition: all 0.2s ease;
+        }
+
+        /* ----- ADMIN LOCK SCREEN (premium fresh look) ----- */
+        #admin-lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e9f5ec 0%, #d4e9da 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .lock-card {
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 40px 32px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.5);
+            transition: transform 0.2s;
+        }
+
+        .lock-card img {
+            height: 55px;
+            margin-bottom: 16px;
+        }
+
+        .lock-card h2 {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0e7b2a, #0f5c22);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .lock-card p {
+            color: #5e6f8d;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        #admin-pass {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s;
+            background: #fefefe;
+            letter-spacing: 2px;
+        }
+
+        #admin-pass:focus {
+            border-color: #0e7b2a;
+            box-shadow: 0 0 0 4px rgba(14,123,42,0.15);
+        }
+
+        .lock-btn {
+            background: #0e7b2a;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .lock-btn:hover {
+            background: #0b6422;
+            transform: scale(0.98);
+        }
+
+        #lock-msg {
+            margin-top: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .msg-error {
+            color: #e11d48;
+            background: #ffe4e6;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+
+        .msg-success {
+            color: #0e7b2a;
+            background: #e0f2e4;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+
+        /* ----- MAIN ADMIN UI (new elegant design) ----- */
+        #main-admin-content {
+            display: none;
+            padding: 20px 28px 40px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* header modern */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: #ffffffdd;
+            backdrop-filter: blur(8px);
+            background: white;
+            padding: 18px 32px;
+            border-radius: 32px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.05);
+            margin-bottom: 32px;
+            border: 1px solid rgba(14,123,42,0.15);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area img {
+            height: 44px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #0e7b2a, #16a34a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        #connection-status {
+            background: #e6f7ec;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0e7b2a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #connection-status i {
+            font-size: 12px;
+        }
+
+        /* stats card premium */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px 20px;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px -8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f0f2f5;
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c7a91;
+            margin-bottom: 8px;
+        }
+
+        .stat-info p {
+            font-size: 40px;
+            font-weight: 800;
+            color: #1e293b;
+            line-height: 1;
+        }
+
+        .stat-icon {
+            background: #eef6ef;
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            color: #0e7b2a;
+            font-size: 28px;
+        }
+
+        /* section title */
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e2a3a;
+        }
+
+        .section-title i {
+            font-size: 26px;
+            color: #0e7b2a;
+        }
+
+        /* orders grid - modern card */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 28px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 32px;
+            padding: 22px;
+            transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+            border: 1px solid #edf2f7;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 6px 12px -6px rgba(0,0,0,0.05);
+        }
+
+        .order-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -12px rgba(14,123,42,0.18);
+            border-color: #cde2d1;
+        }
+
+        .status-pill {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            backdrop-filter: blur(2px);
+        }
+
+        .status-pending {
+            background: #fff3e3;
+            color: #c2410c;
+            border: 1px solid #ffdec2;
+        }
+
+        .status-delivered {
+            background: #e6f7e6;
+            color: #15803d;
+            border: 1px solid #b2e0b2;
+        }
+
+        .order-id {
+            font-size: 12px;
+            font-weight: 600;
+            color: #7c8ba0;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .customer-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f2b1d;
+            margin-bottom: 6px;
+        }
+
+        .customer-meta {
+            font-size: 13px;
+            color: #5f6c84;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .customer-meta i {
+            font-size: 12px;
+            color: #0e7b2a;
+        }
+
+        .item-preview {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fafcfb;
+            padding: 14px;
+            border-radius: 24px;
+            margin-top: 12px;
+            border: 1px solid #eef3ef;
+        }
+
+        .item-preview img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            background: white;
+            border-radius: 16px;
+            padding: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .item-preview-text {
+            flex: 1;
+            font-weight: 700;
+            font-size: 14px;
+            color: #2c3e2f;
+        }
+
+        .item-price {
+            font-weight: 800;
+            color: #0e7b2a;
+            font-size: 18px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #ffffff;
+            border: 1px solid #fee2e2;
+            padding: 8px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e11d48;
+            width: 36px;
+            height: 36px;
+            backdrop-filter: blur(4px);
+        }
+
+        .delete-btn:hover {
+            background: #fff0f0;
+            border-color: #fecaca;
+            transform: scale(1.05);
+        }
+
+        /* MODAL PREMIUM */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(8px);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 95%;
+            max-width: 720px;
+            border-radius: 44px;
+            overflow: hidden;
+            animation: fadeSlideUp 0.2s ease;
+            box-shadow: 0 40px 60px -20px rgba(0,0,0,0.4);
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            background: white;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0e7b2a, #1f8a3e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-modal {
+            font-size: 32px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: 0.1s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #0e7b2a;
+        }
+
+        .modal-body {
+            padding: 28px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .product-section {
+            display: flex;
+            gap: 24px;
+            background: #fafef7;
+            padding: 24px;
+            border-radius: 32px;
+            margin-bottom: 28px;
+            border: 1px solid #e5f0e5;
+        }
+
+        .product-img-large {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            background: white;
+            border-radius: 24px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .product-info h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .info-group {
+            background: #fbfdfb;
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid #edf3ed;
+        }
+
+        .info-group label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #5f8b6f;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .info-group div {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e2a2f;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .action-bar {
+            padding: 20px 28px;
+            background: #ffffff;
+            border-top: 1px solid #ecf3ec;
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-deliver {
+            background: #0e7b2a;
+            color: white;
+            box-shadow: 0 2px 8px rgba(14,123,42,0.2);
+        }
+
+        .btn-deliver:hover {
+            background: #0b6422;
+            transform: scale(0.98);
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOCK SCREEN (same logic, improved UI) -->
+    <div id="admin-lock-screen">
+        <div class="lock-card">
+            <img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" alt="Logo">
+            <h2>Admin Portal</h2>
+            <p>Secure access • Grocery command center</p>
+            <input type="password" id="admin-pass" placeholder="Enter passcode" autocomplete="off">
+            <button class="lock-btn" onclick="checkAdminPassword()">➡ Unlock Dashboard</button>
+            <div id="lock-msg"></div>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN CONTENT (UI MAST, all logic same) -->
+    <div id="main-admin-content">
+        <div class="admin-header">
+            <div class="logo-area">
+                <img src="https://bestbasketes.vercel.app/assets/logo-0Uqv8tyd.png" alt="FreshMart">
+                <h1>FreshMart Admin</h1>
+            </div>
+            <div id="connection-status">
+                <i class="fas fa-circle" style="font-size: 10px;"></i> Live Sync • Firebase
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3><i class="fas fa-shopping-bag"></i> Total Orders</h3>
+                    <p id="total-count">0</p>
+                </div>
+                <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+            </div>
+        </div>
+
+        <div class="orders-container">
+            <div class="section-title">
+                <i class="fas fa-clock"></i> 
+                <span>Recent customer orders</span>
+            </div>
+            <div class="orders-grid" id="orders-list">
+                <!-- dynamic orders injected -->
+            </div>
+        </div>
+
+        <div id="order-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-order-id">Order Summary</h2>
+                    <span class="close-modal" onclick="closeModal()">×</span>
+                </div>
+                <div class="modal-body" id="modal-body-content">
+                    <!-- dynamic product & customer details -->
+                </div>
+                <div class="action-bar" id="modal-actions">
+                    <!-- action buttons -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script>
+        // --- PASSWORD CHECK (unchanged logic, only UI message)
+        function checkAdminPassword() {
+            const pass = document.getElementById('admin-pass').value;
+            const msgDiv = document.getElementById('lock-msg');
+            const lockScreen = document.getElementById('admin-lock-screen');
+            const mainContent = document.getElementById('main-admin-content');
+
+            if (pass === '1001') {
+                msgDiv.innerHTML = '<span class="msg-success"><i class="fas fa-check-circle"></i> AAIYE AAPKA HI TO INTEJAR THA</span>';
+                setTimeout(() => {
+                    lockScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                }, 1000);
+            } else {
+                msgDiv.innerHTML = '<span class="msg-error"><i class="fas fa-lock"></i> JAAKE BAAP SE PASSWORD PUCCHH !</span>';
+                document.getElementById('admin-pass').value = '';
+                setTimeout(() => {
+                    if(msgDiv.innerHTML.includes("JAAKE")) msgDiv.innerHTML = '';
+                }, 2000);
+            }
+        }
+
+        // --- FIREBASE CONFIG (exactly same as original)
+        const firebaseConfig = {
+  apiKey: "AIzaSyDO5jVqXjFfjw-u3bJoZ5Ld0KMz9srvZxA",
+  authDomain: "bbweb1.firebaseapp.com",
+  databaseURL: "https://bbweb1-default-rtdb.firebaseio.com",
+  projectId: "bbweb1",
+  storageBucket: "bbweb1.firebasestorage.app",
+  messagingSenderId: "25164656071",
+  appId: "1:25164656071:web:c9e8fce52d21c4f8a2fde2",
+  measurementId: "G-BVBH8ES9J3"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const ordersList = document.getElementById('orders-list');
+        const totalCountSpan = document.getElementById('total-count');
+        let allOrders = {};
+
+        // realtime listener
+        db.ref('orders').on('value', (snapshot) => {
+            const data = snapshot.val();
+            allOrders = data || {};
+            renderOrders();
+        });
+
+        function renderOrders() {
+            ordersList.innerHTML = '';
+            let total = 0;
+            const entries = Object.entries(allOrders);
+            entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+
+            if (entries.length === 0) {
+                ordersList.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px 20px; background:white; border-radius:48px;">
+                                            <i class="fas fa-store-slash" style="font-size:48px; color:#cbd5e1;"></i>
+                                            <p style="color:#6c7a91; margin-top:16px;">No orders yet, stay tuned!</p>
+                                        </div>`;
+                totalCountSpan.innerText = "0";
+                return;
+            }
+
+            entries.forEach(([id, order]) => {
+                total++;
+                const isPending = order.status !== 'Delivered';
+                const statusClass = order.status === 'Delivered' ? 'status-delivered' : 'status-pending';
+                const item = order.orderItems || {};
+
+                const card = document.createElement('div');
+                card.className = 'order-card';
+                card.onclick = (e) => {
+                    if(e.target.closest('.delete-btn')) return;
+                    showOrderDetails(id);
+                };
+
+                card.innerHTML = `
+                    <span class="status-pill ${statusClass}"><i class="fas ${order.status === 'Delivered' ? 'fa-check-circle' : 'fa-hourglass-half'}"></i> ${order.status || 'Pending'}</span>
+                    <div class="order-id"><i class="far fa-receipt"></i> #${id.slice(-8).toUpperCase()}</div>
+                    <div class="customer-name"><i class="fas fa-user-alt" style="font-size:14px; color:#0e7b2a;"></i> ${order.customer?.name || 'Guest User'}</div>
+                    <div class="customer-meta">
+                        <span><i class="fas fa-phone-alt"></i> ${order.customer?.mobile || '—'}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${order.customer?.city || 'City'}</span>
+                    </div>
+                    <div class="item-preview">
+                        <img src="${item.img || 'https://cdn-icons-png.flaticon.com/512/3595/3595455.png'}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3595/3595455.png'">
+                        <div class="item-preview-text">${item.title || 'Fresh grocery item'}</div>
+                        <div class="item-price">${item.price || '₹0'}</div>
+                    </div>
+                    <button class="delete-btn" title="Delete Order" onclick="deleteOrder(event, '${id}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                ordersList.appendChild(card);
+            });
+            totalCountSpan.innerText = total;
+        }
+
+        // delete order function (same logic)
+        window.deleteOrder = function(event, id) {
+            event.stopPropagation();
+            if (confirm('⚠️ Permanently delete this order? Action cannot be undone.')) {
+                db.ref('orders/' + id).remove().catch(err => {
+                    alert('Delete error: ' + err.message);
+                });
+            }
+        };
+
+        // show order details modal (enhanced UI but same data flow)
+        window.showOrderDetails = function(id) {
+            const order = allOrders[id];
+            if (!order) return;
+            const modal = document.getElementById('order-modal');
+            const body = document.getElementById('modal-body-content');
+            const actions = document.getElementById('modal-actions');
+
+            document.getElementById('modal-order-id').innerHTML = `<i class="fas fa-clipboard-list"></i> Order #${id.slice(-8).toUpperCase()}`;
+
+            const orderItem = order.orderItems || {};
+            const customer = order.customer || {};
+
+            body.innerHTML = `
+                <div class="product-section">
+                    <img class="product-img-large" src="${orderItem.img || 'https://cdn-icons-png.flaticon.com/512/3595/3595455.png'}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3595/3595455.png'">
+                    <div class="product-info">
+                        <div style="background:#eef2ea; display:inline-block; padding:4px 12px; border-radius:40px; font-size:11px; font-weight:800;">🍏 FRESH PICK</div>
+                        <h3 style="margin-top:12px;">${orderItem.title || 'Organic Grocery'}</h3>
+                        <div style="font-size: 28px; font-weight: 800; color: #0e7b2a; margin-top: 8px;">${orderItem.price || '₹0'}</div>
+                        <div style="font-size:13px; color:#5f6c84;"><i class="fas fa-check-circle"></i> Quantity: 1 unit</div>
+                    </div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-group"><label><i class="far fa-user"></i> Full Name</label><div>${customer.name || '—'}</div></div>
+                    <div class="info-group"><label><i class="fas fa-mobile-alt"></i> Mobile</label><div>+91 ${customer.mobile || '—'}</div></div>
+                    <div class="info-group full-width"><label><i class="fas fa-home"></i> Delivery Address</label><div>${customer.address || 'No address provided'}</div></div>
+                    <div class="info-group"><label><i class="fas fa-city"></i> City & State</label><div>${customer.city || ''}, ${customer.state || ''}</div></div>
+                    <div class="info-group"><label><i class="fas fa-map-pin"></i> Pincode</label><div>${customer.pincode || '—'}</div></div>
+                    <div class="info-group"><label><i class="fas fa-credit-card"></i> Payment</label><div>💳 Card / Digital (Paid)</div></div>
+                    <div class="info-group"><label><i class="far fa-calendar-alt"></i> Order Time</label><div>${new Date(order.timestamp).toLocaleString()}</div></div>
+                </div>
+            `;
+
+            if (order.status !== 'Delivered') {
+                actions.innerHTML = `
+                    <button class="btn btn-cancel" onclick="closeModal()"><i class="fas fa-times"></i> Close</button>
+                    <button class="btn btn-deliver" onclick="updateStatus('${id}', 'Delivered')"><i class="fas fa-check-circle"></i> Mark as Delivered</button>
+                `;
+            } else {
+                actions.innerHTML = `
+                    <div style="flex:1; display:flex; justify-content:center; align-items:center; gap:8px; background:#e8f5e9; padding:12px; border-radius:60px; color:#0e7b2a; font-weight:800;">
+                        <i class="fas fa-truck"></i> Order Completed & Delivered
+                    </div>
+                    <button class="btn btn-cancel" onclick="closeModal()">Close</button>
+                `;
+            }
+            modal.style.display = 'flex';
+        };
+
+        window.updateStatus = function(id, status) {
+            db.ref('orders/' + id).update({ status: status }).then(() => {
+                closeModal();
+            }).catch(err => alert('Update failed: ' + err.message));
+        };
+
+        window.closeModal = function() {
+            document.getElementById('order-modal').style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('order-modal');
+            if (event.target === modal) closeModal();
+        };
+    </script>
+</body>
+</html>
